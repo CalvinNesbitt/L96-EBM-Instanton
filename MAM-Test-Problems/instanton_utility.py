@@ -81,12 +81,22 @@ class action_minimisation_checker:
     
     def __init__(self, a, instanton, args):
         """ 
-        param, a: Deterministic part of SDE, feeds in to action integral.
-        param, instanton: the path we're comparing against
-        param, args: arguments for a.
+         Parameters
+        ----------
+        a: function 
+            Takes path and returns drift. 
+            Should be of form a(path, a_args).
+            Path input and are drift output are shape (time, ndim).
+        
+        instanton: numpy array
+            The path/instanton we're comparing against.
+            
+        args: list
+            List of form [a_args, time, d_inv]
+            d_inv is inverse of diffusiong matrix
         """
         self._b = a
-        self.b_args, self.time = args
+        self.b_args, self.time, self.d = args
         
         # Instanton we will we check against
         self.instanton = instanton 
