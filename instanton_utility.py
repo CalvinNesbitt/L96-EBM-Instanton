@@ -21,12 +21,18 @@ eps_path
 
 random_path
     Takes path and adds a random number to each point.
+    
+save_result
+    Saves MAM algorithm output.
+
+load_result
+    Load MAM algorithm output.
 
 """
 
 import numpy as np
 import numpy.random as rm
-
+import pickle
 
 #--------------------------------------------------------------------
 # Classes
@@ -193,8 +199,26 @@ def eps_path(path, x):
     return ep
 
 def random_path(path, b):
-    """Takes path and adds a random number to each point.\
+    """Takes path and adds a random number to each point.
     For each point on the path an number is sampled from uniform(-b, b)
     and added to that point.
     """
     return path + rm.uniform(-b, b, path.shape)
+
+def save_result(result, p, f):
+    """
+    Save MAM algorithm Output.
+        result - output from mam algorithm run
+        p - parameters used for the run. Of form [s, bc, time, inst.shape]
+        f - filename
+    """
+    outfile = open(f,'wb')
+    pickle.dump([result, *p],outfile)
+    outfile.close()
+    print(f'Saved to {f}')
+
+def load_result(f):
+    "Load MAM algorithm output (see save_result)."
+    print(f'Loading {f}')
+    infile = open(f,'rb')
+    return pickle.load(infile)

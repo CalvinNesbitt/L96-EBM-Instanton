@@ -94,10 +94,9 @@ class Mam_alg:
         self._ic = ic.flatten()
         self._instanton = ic.flatten() # Current state of minimisation
 
-        # Create default bounds, really user should set
+        # Create default bounds if user doesn't set
         if (bnds is None):
             self._initialise_bnds() 
-            print("I've created default bounds, but you should probably set some.")
         else:
             self.bnds = bnds
         
@@ -166,7 +165,6 @@ class Mam_alg:
             shape = 1
         else:
             shape = np.ones(self._user_shape[1])
-
 
         # t = 0 Constraint
         self._bnds[0,...,0] = initial_point - 0.001 * shape # Lower bound
