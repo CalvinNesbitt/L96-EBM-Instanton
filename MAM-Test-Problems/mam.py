@@ -170,8 +170,8 @@ class Mam_alg:
         self._bnds[0,...,1] = initial_point + 0.01 * shape # Upper bound
 
         # Bounds for t \in (dt, T-dt)
-        self._bnds[1:-1, ..., 0] = - 10 # 10 chosen as arbitrary default
-        self._bnds[1:-1, ..., 1] = 10 # Important that this is changed for specific problem 
+        self._bnds[1:-1, ..., 0] = - np.inf 
+        self._bnds[1:-1, ..., 1] = np.inf 
 
         # t = T Constraint
         self._bnds[-1,...,0] = final_point - 0.01 * shape
