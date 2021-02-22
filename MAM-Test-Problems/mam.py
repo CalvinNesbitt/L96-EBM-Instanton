@@ -44,27 +44,30 @@ class Mam_alg:
     time: np array
         Time points that paths are parameterised along
         Shape (T)
-
-    d: np array
-        Inverse of diffusion matrix. 
         
     nfev: integer
         Number of function evaluations in MAM thus far.
 
     """
     
-    def __init__(self, b, b_args, ic, time, d, bnds=None):
+    def __init__(self, b, b_args, d, ic, time, bnds=None):
         """
         Parameters
         ----------
         b: function 
-            Takes path and returns drift. 
-            Should be of form b(path, b_args).
+            Takes path and returns drift.
             Path input and are drift output are shape (time, ndim).
+            Should be of form b(path, b_args).
             
         b_args: list 
             Further arguments for b.
             Note b is of form b(path, b_args)
+            
+        d: function
+            Takes point along the path and returns inverse of diffusion matrix.
+            Of form d(point, b_args).
+            Point on path input is of shape (ndim).
+            Return is matrix of shape (ndim, ndim).
     
         ic: np array
             Initial instanton path. 
@@ -75,19 +78,18 @@ class Mam_alg:
             Time points that paths are parameterised along
             Shape (T)
             
-        d: np array
-            Inverse of diffusion matrix. 
+
         """
         
         # User Accessed attrbutes
         self.time = time
-        self.d = d
         self.b_args = b_args
         self.ic = ic
         self.nfev=0
         
         # Internal attributes
         self._b = b
+        self._d = d
         self._user_shape = ic.shape
         self._ic = ic.flatten()
         self._instanton = ic.flatten() # Current state of minimisation
@@ -114,20 +116,21 @@ class Mam_alg:
             method reshapes into (time, ndim)
         """
         h = path.reshape(self._user_shape)                     
-        v = np.vstack(np.gradient(h, self.time.flatten(), 1)[0]) - self._b(0, h, self.b_args)
+        v = np.vstack(np.gradient(h, self.time, 1)[0]) - self._b(h, self.b_args) #<v, D^
 
         # Dot product calulcation
         v2 = [] 
-        for x in v:
-            v2.append(x.dot(self.d @ x.T))
+        for (x, where) in zip(v, h):
+            Dinv = self._d(where, self.b_args)
+            v2.append(x.dot(Dinv @ x.T))
         return 0.5 * np.trapz(v2, x=self.time)
     
     def _1d_action(self, path):
         """
-        Same as _action method for 1d case.
+        Same as _action method for 1d case. DOESN'T YET WORK FOR STATE DEPENDENT NOISE
         """
         h = path.reshape(self._user_shape)    
-        v = np.gradient(h, self.time) -  self._b(0, h, self.b_args)
+        v = np.gradient(h, self.time) -  self._b(h, self.b_args)
         integrand =  v**2
         return 0.5 * np.trapz(integrand, x=self.time)
     
@@ -166,16 +169,16 @@ class Mam_alg:
 
 
         # t = 0 Constraint
-        self._bnds[0,...,0] = initial_point - 0.01 * shape # Lower bound
-        self._bnds[0,...,1] = initial_point + 0.01 * shape # Upper bound
+        self._bnds[0,...,0] = initial_point - 0.001 * shape # Lower bound
+        self._bnds[0,...,1] = initial_point + 0.001 * shape # Upper bound
 
         # Bounds for t \in (dt, T-dt)
         self._bnds[1:-1, ..., 0] = - np.inf 
         self._bnds[1:-1, ..., 1] = np.inf 
 
         # t = T Constraint
-        self._bnds[-1,...,0] = final_point - 0.01 * shape
-        self._bnds[-1,...,1] = final_point + 0.01 * shape
+        self._bnds[-1,...,0] = final_point - 0.001 * shape
+        self._bnds[-1,...,1] = final_point + 0.001 * shape
 
         # We then reshape to the form used by the object
         self._bnds = self._bnds.reshape(len(self.ic.flatten()), 2)
