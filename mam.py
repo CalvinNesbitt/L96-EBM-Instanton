@@ -181,14 +181,14 @@ class Mam_alg:
         # We then reshape to the form used by the object
         self._bnds = self._bnds.reshape(len(self.ic.flatten()), 2)
         
-    def run(self, opt):
+    def run(self, opt, jac=None):
         "Runs the MAM algorithm. opt feds scipy.minimize via options argument."
         if (len(self._user_shape) == 1): #ndim=1 case
             res = minimize(self._1d_action, self._instanton, method='L-BFGS-B', bounds = self._bnds, 
-               options=opt)
+               jac=jac, options=opt)
         else:
             res = minimize(self._action, self._instanton, method='L-BFGS-B', bounds = self._bnds, 
-                   options=opt)
+                   jac=jac, options=opt)
         print(res.message)
         self._instanton = res.x
         self.nfev += res.nfev

@@ -125,6 +125,9 @@ class TrajectoryObserver():
 
     def __init__(self, integrator, name='L96-EBM-Trajectory'):
         """param, integrator: integrator being observed."""
+        
+        self.name = name
+        self.dump_count = 0
 
         # Needed knowledge of the integrator
         self._parameters = integrator.parameter_dict
