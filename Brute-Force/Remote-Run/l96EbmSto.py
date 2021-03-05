@@ -30,7 +30,7 @@ import os
 ## Where Output is Written
 ##########################################
 
-save_directory = f'/rds/general/user/cfn18/ephemeral/L96-EBM-Stochastic/k40_eps0_01/{str(sys.argv[1])}'
+save_directory = f'/rds/general/user/cfn18/ephemeral/L96-EBM-Stochastic/k40_eps0_1/{str(sys.argv[1])}'
 os.makedirs(save_directory)
 
 ##########################################
@@ -50,21 +50,21 @@ alpha = 2.
 beta = 1.
 
 # Noise Parameters
-eps = 0.01
+eps = 0.1
 delta = 0.1
 
 p = np.array([K, S, a0, a1, sigma, F, Tref, delT, alpha, beta, eps, delta])
 
 # Number of observations
-block_length = 1000 # Output stored every 0.1 so no. of obs = blocklenth/0.1 * number of blocks
-number_of_blocks = 10
+block_length = 100 # Output stored every 0.1 so no. of obs = 10 * blocklength * number of blocks
+number_of_blocks = 1000
 
 ##########################################
 ## Choosing Spread of Intial Ts
 ##########################################
 
 T0s = []
-for temp in [258, 275, 293]: # one run for each attractor
+for temp in [258, 293]: # one run for each "attractor"
     T0s.append(temp + rm.normal(scale=2, size=1))
     
 ##########################################
@@ -120,7 +120,7 @@ for T in T0s:
         print(prob.tspan)
 
         # Integrate
-        sol = de.solve(prob, de.SOSRI(), reltol=1e-3,abstol=1e-3, saveat=0.1)
+        sol = de.solve(prob, de.SRIW1(), reltol=1e-3,abstol=1e-3, saveat=0.1)
         looker.look(sol)
 
         # Save Observations
