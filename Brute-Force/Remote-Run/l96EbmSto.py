@@ -12,7 +12,7 @@
 import sys
 sys.path.append('/rds/general/user/cfn18/home/Instantons/L96-EBM-Instanton/Brute-Force')
 
-from l96ESUtility import * # IMPORT TEST
+from l96EsUtility import * # IMPORT TEST
 
 #diffeqpy requires Julia
 from julia.api import Julia

@@ -7,8 +7,10 @@ import xarray as xr
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from tqdm.notebook import tqdm
 from scipy.stats import gaussian_kde
+
 
 ################################################
 ## Input/Output
@@ -29,7 +31,7 @@ def load_run(d, s=slice(0, 10, 1)):
         folder = d + '/' + file +'/'
         for Tfile in os.listdir(folder):
             subfolder = folder + Tfile
-            ds = xr.open_mfdataset(subfolder+ '/*.nc', parallel=True, combine='by_coords', concat_dim='time')
+            ds = xr.open_mfdataset(subfolder+ '/*.nc', combine='by_coords', concat_dim='time')
             results.append(ds)
     return results
 
@@ -73,13 +75,13 @@ def re_dir_search(d, thres=(270, 280)):
 
     rare_events = []
     
-    # Split Run in to Blocks of 10
-    length = int(len(os.listdir(k40_eps0_1_dir)))
-    Print(f'There are {length} blocks to search')
-    remainder = length%10
-    no_of_blocks = int((length - remainder)/10)
+    # Split Run in to Blocks of 5
+    length = int(len(os.listdir(d)))
+    remainder = length%5
+    no_of_blocks = int((length - remainder)/5)
+    print(f'There are {no_of_blocks} blocks to search')
 
-    slices = [slice(i * 10, (i + 1) * 10) for i in range(no_of_blocks)]
+    slices = [slice(i * 5, (i + 1) * 5) for i in range(no_of_blocks)]
     remainder_slice = slice(length - remainder, length)
     slices.append(remainder_slice)
     
