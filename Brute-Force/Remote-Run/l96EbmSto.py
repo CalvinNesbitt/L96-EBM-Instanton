@@ -30,7 +30,7 @@ import os
 ## Where Output is Written
 ##########################################
 
-save_directory = f'/rds/general/user/cfn18/ephemeral/L96-EBM-Stochastic/k40_eps0_1/{str(sys.argv[1])}'
+save_directory = f'/rds/general/user/cfn18/ephemeral/L96-EBM-Stochastic/k50_eps0_1/{str(sys.argv[1])}'
 os.makedirs(save_directory)
 
 ##########################################
@@ -38,7 +38,7 @@ os.makedirs(save_directory)
 ##########################################
 
 # L96 EBM Parameters
-K = 40
+K = 50
 S = 12.
 a0 = 0.5
 a1 = 0.4

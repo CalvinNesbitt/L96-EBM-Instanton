@@ -15,14 +15,14 @@ import sys
 ## Where Output is Written
 ##########################################
 
-save_directory = '/rds/general/user/cfn18/ephemeral/L96-EBM-Deterministic/Ensemble-Run5Big'
+save_directory = '/rds/general/user/cfn18/ephemeral/L96-EBM-Deterministic/Ensemble-Run20'
 
 ##########################################
 ## Setting Parameters
 ##########################################
 
 # L96 Parameters
-K = 5
+K = 20
 S = 12
 a0 = 0.5
 a1 = 0.4

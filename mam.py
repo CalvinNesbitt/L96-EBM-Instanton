@@ -115,11 +115,11 @@ class Mam_alg:
             method reshapes into (time, ndim)
         """
         h = path.reshape(self._user_shape)                     
-        v = np.vstack(np.gradient(inst_ic, time, axis=0)) - self._b(h, self.b_args) #<v, D^
+        v = np.vstack(np.gradient(h, self.time, axis=0)) - self._b(h, self.b_args) #v from <v, D^-1v>
 
         # Dot product calulcation
         v2 = [] 
-        for (x, where) in zip(v, h):
+        for (x, where) in zip(v, h): #<v, D^-1v> along the path
             Dinv = self._d(where, self.b_args)
             v2.append(x.dot(Dinv @ x.T))
         return 0.5 * np.trapz(v2, x=self.time)

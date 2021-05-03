@@ -19,8 +19,9 @@ def pickler(l, s):
         
 def unpickler(s):
     "Unpickle s.pickle."
-    with open(s + '.pickle', "rb") as input_file:
-        return pickle.load(input_file)
+    with open(s, "rb") as input_file:
+        p = pickle.load(input_file) 
+        return [str(x) for x in p]
     
 def close_list(run):
     for ds in run:
@@ -76,7 +77,29 @@ def re_test(ds, thres=(270, 280)):
     transition = np.any(cold) & np.any(hot)
     return transition
 
-def sort_runs(run_list, thres=(270, 280), prog=False):
+def re_duration_test(ds, thres = 273):
+    """
+    Tests if a L96 EBM dataset contains a transition.
+    Checks if many parts of the run are above/below threshold.
+        
+    ds, xr.dataset, param
+        Dataset containing the L96 EBM run.
+        
+    thres, float, param
+        Thresholds for transition test.
+        Test is passed if:
+            100 T steps < thres & 100 T steps > thres.
+        
+    transition, boolean, output
+        Did we have a transition?
+    """
+    cold = ds.T.values < thres
+    hot = ds.T.values > thres
+    transition = ((np.sum(cold) > 100) & (np.sum(hot) > 100))
+    return transition
+    
+
+def sort_runs(run_list, prog=False):
     """
     Sorts an array jobs directory in to transitions, no transitions and corrupt runs.
     
@@ -105,7 +128,7 @@ def sort_runs(run_list, thres=(270, 280), prog=False):
         try:
             # Open and check if it contains a transition
             with xr.open_mfdataset(run + '/*.nc', combine='by_coords', concat_dim='time') as ds:
-                rare = re_test(ds, thres)
+                rare = re_duration_test(ds)
         except:
             print(f'Error opening {run}')
             corrupted = True
